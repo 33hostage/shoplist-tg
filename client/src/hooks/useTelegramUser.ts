@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 
 interface TelegramUser {
-	id: number
+	id: string
 	first_name: string
 	username?: string
 	authToken?: string
@@ -20,7 +20,7 @@ export function useTelegramUser() {
 			if (initData && API_URL) {
 				const controller = new AbortController()
 				const id = setTimeout(() => controller.abort(), 10000)
-				const response = await fetch(`${API_URL}/auth/login`, {
+				const response = await fetch(`${API_URL}/api/auth/login`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -34,7 +34,7 @@ export function useTelegramUser() {
 				if (response.ok) {
 					const { userData, token } = await response.json()
 					setUser({
-						id: userData.id,
+						id: String(userData.id),
 						first_name: userData.first_name,
 						username: userData.username,
 						authToken: token,
