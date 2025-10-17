@@ -96,8 +96,8 @@ export function ListProvider({ children }: { children: React.ReactNode }) {
 
 	const API_BASE =
 		process.env.NODE_ENV === "development"
-			? "http://localhost:4000/api"
-			: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"
+			? "http://localhost:4000"
+			: process.env.NEXT_PUBLIC_API_URL || "https://shoplist-tg-backend.onrender.com"
 
 	// Очистка таймера отмены при размонтировании
 	useEffect(() => {
@@ -128,8 +128,8 @@ export function ListProvider({ children }: { children: React.ReactNode }) {
 			}
 
 			try {
-				const res = await fetch(`${API_BASE}/lists/${listId}`, {
-					headers: { "X-Telegram-Init-Data": initData },
+				const res = await fetch(`${API_BASE}/api/lists/${listId}`, {
+					headers: { "Telegram-Auth-Data": initData },
 				})
 
 				if (res.ok) {
@@ -181,11 +181,11 @@ export function ListProvider({ children }: { children: React.ReactNode }) {
 					const tasks = JSON.parse(storedTasks)
 					// Отправляем задачи на сервер
 					for (const task of tasks) {
-						await fetch(`${API_BASE}/tasks`, {
+						await fetch(`${API_BASE}/api/tasks`, {
 							method: "POST",
 							headers: {
 								"Content-Type": "application/json",
-								"X-Telegram-Init-Data": getInitData(),
+								"Telegram-Auth-Data": getInitData(),
 							},
 							body: JSON.stringify({
 								listId,
@@ -236,11 +236,11 @@ export function ListProvider({ children }: { children: React.ReactNode }) {
 		setSyncStatus("saving")
 
 		try {
-			const res = await fetch(`${API_BASE}/tasks`, {
+			const res = await fetch(`${API_BASE}/api/tasks`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					"X-Telegram-Init-Data": initData,
+					"Telegram-Auth-Data": initData,
 				},
 				body: JSON.stringify({ listId, text: trimmedText }),
 			})
@@ -273,11 +273,11 @@ export function ListProvider({ children }: { children: React.ReactNode }) {
 		setSyncStatus("saving")
 
 		try {
-			const res = await fetch(`${API_BASE}/tasks/${taskId}`, {
+			const res = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
-					"X-Telegram-Init-Data": initData,
+					"Telegram-Auth-Data": initData,
 				},
 				body: JSON.stringify({ completed: !task.completed }),
 			})
@@ -331,9 +331,9 @@ export function ListProvider({ children }: { children: React.ReactNode }) {
 		let deleteSuccess = false
 		if (initData) {
 			try {
-				const res = await fetch(`${API_BASE}/tasks/${taskId}`, {
+				const res = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
 					method: "DELETE",
-					headers: { "X-Telegram-Init-Data": initData },
+					headers: { "Telegram-Auth-Data": initData },
 				})
 				deleteSuccess = res.ok
 				if (!deleteSuccess) {
@@ -382,11 +382,11 @@ export function ListProvider({ children }: { children: React.ReactNode }) {
 		setSyncStatus("saving")
 
 		try {
-			const res = await fetch(`${API_BASE}/lists/${listId}`, {
+			const res = await fetch(`${API_BASE}/api/lists/${listId}`, {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
-					"X-Telegram-Init-Data": initData,
+					"Telegram-Auth-Data": initData,
 				},
 				body: JSON.stringify({ title: newTitle }),
 			})
@@ -427,11 +427,11 @@ export function ListProvider({ children }: { children: React.ReactNode }) {
 		const initData = getInitData()
 		if (initData && listId) {
 			try {
-				const res = await fetch(`${API_BASE}/tasks`, {
+				const res = await fetch(`${API_BASE}/api/tasks`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
-						"X-Telegram-Init-Data": initData,
+						"Telegram-Auth-Data": initData,
 					},
 					body: JSON.stringify({
 						listId,

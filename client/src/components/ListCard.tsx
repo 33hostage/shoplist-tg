@@ -3,7 +3,6 @@
 import { memo, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import Link from "next/link"
 
 interface Task {
 	id: string
@@ -28,6 +27,8 @@ interface ListCardProps {
 function ListCard({ list, stats, onListDeleted }: ListCardProps) {
 	const router = useRouter()
 
+	const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 	const handleDelete = useCallback(
 		async (e: React.MouseEvent) => {
 			e.stopPropagation()
@@ -47,10 +48,10 @@ function ListCard({ list, stats, onListDeleted }: ListCardProps) {
 
 						try {
 							const res = await fetch(
-								`http://localhost:4000/api/lists/${list.id}`,
+								`${API_URL}/api/lists/${list.id}`,
 								{
 									method: "DELETE",
-									headers: { "X-Telegram-Init-Data": initData },
+									headers: { "Telegram-Auth-Data": initData },
 								}
 							)
 

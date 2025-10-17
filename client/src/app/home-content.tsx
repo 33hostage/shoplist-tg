@@ -26,6 +26,8 @@ export default function HomePage() {
 	const [error, setError] = useState<string | null>(null)
 	const router = useRouter()
 
+	const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 	// Загрузка списков
 	useEffect(() => {
 		if (userLoading) return
@@ -41,8 +43,8 @@ export default function HomePage() {
 			}
 
 			try {
-				const res = await fetch("http://localhost:4000/api/lists", {
-					headers: { "X-Telegram-Init-Data": initData },
+				const res = await fetch(`${API_URL}/api/lists`, {
+					headers: { "Telegram-Auth-Data": initData },
 				})
 
 				if (res.ok) {
@@ -87,11 +89,11 @@ export default function HomePage() {
 		}
 
 		try {
-			const res = await fetch("http://localhost:4000/api/lists", {
+			const res = await fetch(`${API_URL}/api/lists`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					"X-Telegram-Init-Data": initData,
+					"Telegram-Auth-Data": initData,
 				},
 				body: JSON.stringify({ title: "Новый список" }),
 			})
