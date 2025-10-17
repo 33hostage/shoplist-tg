@@ -1,30 +1,33 @@
-'use client'
+"use client"
 
-import { useEffect } from 'react';
-import { StoreProvider } from "@/store/provider";
+import { useEffect } from "react"
+import { StoreProvider } from "@/store/provider"
 import { TelegramInitializer } from "@/components/TelegramInitializer"
-import { ThemeInitializer } from '@/components/ThemeInitializer';
+import { ThemeInitializer } from "@/components/ThemeInitializer"
+import { UserProvider } from '@/context/UserContext';
 
 export default function ClientProviders({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode
 }) {
 	// Очищаем sessionStorage когда вкладка закрывается
-  useEffect(() => {
-    // Проверяем, первый ли это запуск в этой "жизни" вкладки
-    if (!sessionStorage.getItem('app_session_started')) {
-      // Это новая сессия/открытие Mini App
-      sessionStorage.clear(); // Полная очистка
-      sessionStorage.setItem('app_session_started', 'true');
-    }
-  }, []);
+	useEffect(() => {
+		// Проверяем, первый ли это запуск в этой "жизни" вкладки
+		if (!sessionStorage.getItem("app_session_started")) {
+			// Это новая сессия/открытие Mini App
+			sessionStorage.clear() // Полная очистка
+			sessionStorage.setItem("app_session_started", "true")
+		}
+	}, [])
 
-  return (
-    <StoreProvider>
-      <TelegramInitializer />
-      <ThemeInitializer />
-      {children}
-    </StoreProvider>
-  );
+	return (
+		<StoreProvider>
+			<TelegramInitializer />
+			<ThemeInitializer />
+			<UserProvider>
+        {children} 
+      </UserProvider>
+		</StoreProvider>
+	)
 }

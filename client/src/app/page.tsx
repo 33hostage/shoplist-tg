@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useTelegramUser } from "@/hooks/useTelegramUser"
+import { useUser } from "@/context/UserContext"
 import WelcomePage from "./welcome/page"
 import HomePageContent from "./home-content"
 
 export default function Page() {
-	const { user, isLoading } = useTelegramUser()
+	const { user, isLoading } = useUser()
 	const [showWelcome, setShowWelcome] = useState(true)
 	const [sessionChecked, setSessionChecked] = useState(false)
 

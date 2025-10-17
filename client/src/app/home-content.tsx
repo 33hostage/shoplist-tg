@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { mockTelegramWebApp } from "@/lib/mockTelegram"
 import ListCard from "@/components/ListCard"
 import { toast } from "sonner"
-import { useTelegramUser } from "@/hooks/useTelegramUser"
+import { useUser } from "@/context/UserContext"
 
 interface Task {
 	id: string
@@ -21,7 +21,7 @@ interface List {
 }
 
 export default function HomePage() {
-	const { user, isLoading: userLoading } = useTelegramUser()
+	const { user, isLoading: userLoading } = useUser()
 	const [myLists, setMyLists] = useState<List[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -36,9 +36,11 @@ export default function HomePage() {
 
 	// Загрузка списков
 	useEffect(() => {
+		if (userLoading) return;
 		if (!user) return
 
 		const fetchLists = async () => {
+			setLoading(true)
 			const initData = (window as any).Telegram?.WebApp?.initData
 			if (!initData) {
 				setError("Нет данных Telegram")
@@ -66,7 +68,7 @@ export default function HomePage() {
 		}
 
 		fetchLists()
-	}, [user])
+	}, [user, userLoading])
 
 	const formatDate = (dateString: string): string => {
 		const date = new Date(dateString)
@@ -116,7 +118,7 @@ export default function HomePage() {
 		}
 	}
 
-	if (userLoading || loading) {
+	if (loading) {
 		return (
 			<div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 flex items-center justify-center">
 				<div className="text-center">

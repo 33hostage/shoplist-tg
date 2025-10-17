@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useTelegramUser } from "@/hooks/useTelegramUser"
 import { mockTelegramWebApp } from "@/lib/mockTelegram"
+import { useUser } from "@/context/UserContext"
 
 const APP_VERSION = "1.0.0"
 
@@ -13,7 +13,7 @@ interface WelcomePageProps {
 
 export default function WelcomePage({ onContinue }: WelcomePageProps) {
 	const router = useRouter()
-	const { user, isLoading } = useTelegramUser()
+	const { user } = useUser()
 	const [showContent, setShowContent] = useState(false)
 
 	// Инициализация мока в dev-режиме
@@ -25,7 +25,6 @@ export default function WelcomePage({ onContinue }: WelcomePageProps) {
 
 	// Показываем контент и запускаем таймер
 	useEffect(() => {
-		if (!isLoading) {
 			setShowContent(true)
 
 			// Автоматический переход через 3 секунды
@@ -34,19 +33,7 @@ export default function WelcomePage({ onContinue }: WelcomePageProps) {
 			}, 3000)
 
 			return () => clearTimeout(timer)
-		}
-	}, [isLoading, router, onContinue])
-
-	if (isLoading) {
-		return (
-			<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-					<p className="mt-4 text-gray-600 dark:text-gray-300">Загрузка...</p>
-				</div>
-			</div>
-		)
-	}
+	}, [router, onContinue])
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex flex-col items-center justify-center p-4">
