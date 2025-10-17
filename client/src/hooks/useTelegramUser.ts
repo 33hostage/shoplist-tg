@@ -15,17 +15,27 @@ export function useTelegramUser() {
 
 	useEffect(() => {
 		const authenticateUser = async () => {
-			setIsLoading(true)
+			
+			setTimeout(async () => {
+				setIsLoading(true)
+				if (
+					typeof window === "undefined" ||
+					!window.Telegram ||
+					!window.Telegram.WebApp
+				) {
+					console.warn("Telegram WebApp не найдено. (Не в Telegram?)")
+					setIsLoading(false)
+					return
+				}
 
-			if (typeof window !== "undefined" && window.Telegram?.WebApp) {
 				const tg = window.Telegram.WebApp
 				tg.ready()
 				tg.expand()
 
 				const initData = tg.initData
 
-				if (initData && API_URL) {
-					try {
+				try {
+					if (initData && API_URL) {
 						const response = await fetch(`${API_URL}/auth/login`, {
 							method: "POST",
 							headers: {
@@ -43,17 +53,19 @@ export function useTelegramUser() {
 								username: userData.username,
 								authToken: token,
 							})
+							console.log("✅ Авторизация успешна.")
 						} else {
 							console.error(`Авторизация не удалась. Код: ${response.status}`)
 						}
-					} catch (error) {
-						console.error("Критическая ошибка при Fetch:", error)
+					} else {
+						console.log("WebApp готова, но initData или API_URL пуста.")
 					}
+				} catch (error) {
+					console.error("Критическая ошибка при Fetch:", error)
+				} finally {
+					setIsLoading(false)
 				}
-			} else {
-				console.log("WebApp готова, но initData пуста.")
-			}
-			setIsLoading(false)
+			}, 0)
 		}
 		authenticateUser()
 	}, [])
