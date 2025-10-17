@@ -1,7 +1,18 @@
 import { Request, Response } from "express"
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, Prisma } from "@prisma/client"
 
 const prisma = new PrismaClient()
+
+// 1. Создаем тип для результата запроса к List с включением (include)
+const listWithRelations = Prisma.validator<Prisma.ListDefaultArgs>()({
+  include: {
+    tasks: true,
+    owner: true,
+  },
+})
+
+type ListWithRelations = Prisma.ListGetPayload<typeof listWithRelations>
+type TaskType = Prisma.TaskGetPayload<{}>
 
 // POST /api/lists — создать список
 export const createList = async (req: Request, res: Response) => {
@@ -84,7 +95,7 @@ export const getMyLists = async (req: Request, res: Response) => {
 				owner: true,
 			},
 			orderBy: { createdAt: "desc" },
-		})
+		}) as ListWithRelations[]
 
 		// Преобразуем BigInt в string для JSON
 		const serializableLists = lists.map(list => ({
@@ -94,7 +105,7 @@ export const getMyLists = async (req: Request, res: Response) => {
 				...list.owner,
 				id: list.owner.id.toString(), // ← важно!
 			},
-			tasks: list.tasks.map(task => ({
+			tasks: list.tasks.map((task: TaskType) => ({
 				...task,
 				// task.id — строка (cuid), так что не нужно преобразовывать
 			})),
