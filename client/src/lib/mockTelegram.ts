@@ -14,6 +14,8 @@ export const mockTelegramWebApp = () => {
 			initDataUnsafe: {
 				user: { id: 123456789, first_name: "Роман", username: "roman_dev" },
 				start_param: "list_demo123",
+				auth_date: Date.now() / 1000,
+				hash: 'MOCK_HASH_FOR_TS_VALIDATION',
 			},
 			sendData: data => console.log("📤 Send to bot:", data),
 			close: () => console.log("❌ Telegram WebApp closed (mock)"),
