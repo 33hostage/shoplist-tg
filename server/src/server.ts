@@ -15,6 +15,10 @@ app.use(helmet())
 app.use(morgan("dev"))
 app.use(express.json())
 
+app.get('/', (req, res) => {
+    res.status(200).json({ status: "ok", service: "backend" });
+});
+
 // Health-check
 app.get("/api/health", (req, res) => {
 	res.json({ status: "OK", timestamp: new Date().toISOString() })
@@ -22,11 +26,8 @@ app.get("/api/health", (req, res) => {
 
 // Запросы с фронта
 app.use(
-  cors({
-    origin: [
-      'http://localhost:3000', // для dev
-      process.env.CLIENT_URL || 'https://your-frontend-domain.vercel.app', // для prod
-    ].filter(Boolean),
+cors({
+    origin: '*', // <--- ИЗМЕНИТЬ НА '*' ДЛЯ ОТЛАДКИ.
     credentials: true,
   })
 );
