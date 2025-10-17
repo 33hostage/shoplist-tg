@@ -17,6 +17,12 @@ export const mockTelegramWebApp = () => {
 			},
 			sendData: data => console.log("📤 Send to bot:", data),
 			close: () => console.log("❌ Telegram WebApp closed (mock)"),
+			onEvent: (eventType, callback) => {
+        console.log(`[MOCK] Event listener added for: ${eventType}`)
+      },
+			offEvent: (eventType, callback) => {
+        console.log(`[MOCK] Event listener removed for: ${eventType}`)
+      },
 		}
 		window.Telegram = { WebApp: mockWebApp }
 

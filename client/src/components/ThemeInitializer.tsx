@@ -1,16 +1,16 @@
-'use client'
+"use client"
 
-import { useEffect } from 'react';
+import { useEffect } from "react"
+import type { TelegramWebApp } from "@/types/telegram"
 
 export function ThemeInitializer() {
 	useEffect(() => {
-		if (typeof window === 'undefined' || !window.Telegram?.WebApp) return
+		if (typeof window === "undefined" || !window.Telegram?.WebApp) return
 
-		const tg = window.Telegram.WebApp
-		const theme = tg.colorScheme || 'light'
+		const tg = window.Telegram.WebApp as TelegramWebApp
+		const theme = tg.colorScheme || "light"
 
-		document.body.classList.toggle('dark', theme === 'dark')
-
+		document.body.classList.toggle("dark", theme === "dark")
 	}, [])
 
 	return null
