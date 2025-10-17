@@ -3,18 +3,20 @@ export interface TelegramWebApp {
 	expand: () => void
 	close: () => void
 	sendData: (data: string) => void
-	initData?: string
+	initData: string
 	initDataUnsafe?: {
 		user?: {
 			id: number
 			first_name: string
 			username?: string
 		}
+		auth_date: number
+		hash: string
 		start_param?: string
 	}
-	colorScheme?: 'light' | 'dark';
-	onEvent: (eventType: string, callback: () => void) => void;
-	offEvent: (eventType: string, callback: () => void) => void;
+	colorScheme?: "light" | "dark"
+	onEvent: (eventType: string, callback: () => void) => void
+	offEvent: (eventType: string, callback: () => void) => void
 }
 
 declare global {

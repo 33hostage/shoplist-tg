@@ -8,6 +8,7 @@ declare global {
 				expand: () => void
 				close: () => void
 				sendData: (data: string) => void
+				initData: string;
 				initDataUnsafe?: {
 					user?: {
 						id: number
