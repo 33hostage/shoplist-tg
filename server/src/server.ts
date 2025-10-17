@@ -36,7 +36,7 @@ app.use(
 	})
 )
 
-app.options('*', cors());
+/* app.options('*', cors()); */
 
 // API routes
 app.use("/api", routes)
