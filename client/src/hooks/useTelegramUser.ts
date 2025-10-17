@@ -60,6 +60,7 @@ export function useTelegramUser() {
 		const checkReadyAndAuth = () => {
 			tg.ready()
 			tg.expand()
+			console.log("Текущий tg.initData:", tg.initData);
 
 			if (tg.initData) {
 				fetchAuth(tg.initData)
