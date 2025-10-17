@@ -36,5 +36,5 @@
 ### 1. Клонирование репозитория
 
 ```bash
-git clone https://github.com/yourusername/simple-list-tg.git
-cd simple-list-tg
+git clone  https://github.com/33hostage/shoplist-tg.git
+cd shoplist-tg
