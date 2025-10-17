@@ -15,8 +15,8 @@ export interface TelegramWebApp {
 		start_param?: string
 	}
 	colorScheme?: "light" | "dark"
-	onEvent: (eventType: string, callback: () => void) => void
-	offEvent: (eventType: string, callback: () => void) => void
+	onEvent: (eventType: string, callback: (...args: any[]) => void) => void
+	offEvent: (eventType: string, callback: (...args: any[]) => void) => void
 }
 
 declare global {
