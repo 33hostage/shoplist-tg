@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { mockTelegramWebApp } from "@/lib/mockTelegram"
 import ListCard from "@/components/ListCard"
 import { toast } from "sonner"
 import { useUser } from "@/context/UserContext"
@@ -27,16 +26,9 @@ export default function HomePage() {
 	const [error, setError] = useState<string | null>(null)
 	const router = useRouter()
 
-	useEffect(() => {
-		// Инициализируем мок
-		if (process.env.NODE_ENV === "development") {
-			mockTelegramWebApp()
-		}
-	}, [])
-
 	// Загрузка списков
 	useEffect(() => {
-		if (userLoading) return;
+		if (userLoading) return
 		if (!user) return
 
 		const fetchLists = async () => {
@@ -137,7 +129,7 @@ export default function HomePage() {
 		)
 	}
 
-	const userName = user?.first_name || 'Друг'
+	const userName = user?.first_name || "Друг"
 
 	return (
 		<div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 page-fade-in">

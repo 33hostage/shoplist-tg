@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { mockTelegramWebApp } from "@/lib/mockTelegram"
 import { useUser } from "@/context/UserContext"
 
 const APP_VERSION = "1.0.0"
@@ -16,23 +15,16 @@ export default function WelcomePage({ onContinue }: WelcomePageProps) {
 	const { user } = useUser()
 	const [showContent, setShowContent] = useState(false)
 
-	// Инициализация мока в dev-режиме
-	useEffect(() => {
-		if (process.env.NODE_ENV === "development") {
-			mockTelegramWebApp()
-		}
-	}, [])
-
 	// Показываем контент и запускаем таймер
 	useEffect(() => {
-			setShowContent(true)
+		setShowContent(true)
 
-			// Автоматический переход через 3 секунды
-			const timer = setTimeout(() => {
-				onContinue?.() || router.replace("/")
-			}, 3000)
+		// Автоматический переход через 3 секунды
+		const timer = setTimeout(() => {
+			onContinue?.() || router.replace("/")
+		}, 3000)
 
-			return () => clearTimeout(timer)
+		return () => clearTimeout(timer)
 	}, [router, onContinue])
 
 	return (
