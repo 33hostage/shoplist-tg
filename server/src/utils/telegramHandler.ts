@@ -8,10 +8,10 @@ async function handleTelegramMessage(message: any) {
 	const text = message.text
 	const apiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`
 
-	if (text && text.startWith("/start")) {
+	if (text && text.startsWith("/start")) {
 		const payload = text.substring(6).trim()
 
-		if (payload.startWith("app_")) {
+		if (payload.startsWith("app_")) {
 			const listId = payload.substring(4)
 			const webAppUrl = `${WEB_APP_URL}?listId=${listId}`
 
