@@ -11,7 +11,7 @@ interface ShareButtonProps {
 
 export default function ShareButton({ listId, botUsername }: ShareButtonProps) {
   const handleShare = async () => {
-    const shareUrl = `https://t.me/${botUsername}/app?start=app_${listId}`;
+    const shareUrl = `https://t.me/${botUsername}?start=app_${listId}`;
 
     // Функция для копирования текста в буфер обмена
     const copyToClipboard = async (text: string) => {
