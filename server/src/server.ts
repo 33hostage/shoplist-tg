@@ -5,6 +5,7 @@ import morgan from "morgan"
 import dotenv from "dotenv"
 import routes from "./routes"
 import { errorHandler } from "./middleware/errorHandler"
+import handleTelegramMessage from "./utils/telegramHandler"
 
 dotenv.config()
 
@@ -14,6 +15,17 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT) : 4000
 app.use(helmet())
 app.use(morgan("dev"))
 app.use(express.json())
+
+// Маршрут для Telegram Webhook
+app.post('/telegram/webhook', async (req, res) => {
+	const update = req.body
+
+	if (update.message) {
+		await handleTelegramMessage(update.message)
+	}
+
+	res.status(200).send('OK')
+})
 
 app.get("/", (req, res) => {
 	res.status(200).json({ status: "ok", service: "backend" })
