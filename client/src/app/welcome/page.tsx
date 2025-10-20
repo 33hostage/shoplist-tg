@@ -6,14 +6,14 @@ import { useUser } from "@/context/UserContext"
 
 const APP_VERSION = "1.0.0"
 
-interface WelcomePageProps {
-	onContinue?: () => void // Для ручного продолжения, если нужно
-}
-
-export default function WelcomePage({ onContinue }: WelcomePageProps) {
+export default function WelcomePage() {
 	const router = useRouter()
 	const { user } = useUser()
 	const [showContent, setShowContent] = useState(false)
+
+	const handleContinue = () => {
+		router.replace("/")
+	}
 
 	// Показываем контент и запускаем таймер
 	useEffect(() => {
@@ -21,11 +21,11 @@ export default function WelcomePage({ onContinue }: WelcomePageProps) {
 
 		// Автоматический переход через 3 секунды
 		const timer = setTimeout(() => {
-			onContinue?.() || router.replace("/")
+			handleContinue() // Вызываем внутреннюю функцию
 		}, 3000)
 
 		return () => clearTimeout(timer)
-	}, [router, onContinue])
+	}, [router])
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex flex-col items-center justify-center p-4">
