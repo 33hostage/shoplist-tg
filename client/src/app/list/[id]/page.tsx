@@ -106,7 +106,7 @@ if (loading) {
 				</div>
 
 				{/* Кнопка "Поделиться" */}
-				{isOwner && <ShareButton listId={listId} botUsername="SimpleListTG_Bot" />}
+				{isOwner && <ShareButton listId={listId} botUsername="simplelist_bot" />}
 			</div>
 
 			{/* Баннер отмены */}
