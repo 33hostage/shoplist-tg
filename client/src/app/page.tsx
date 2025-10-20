@@ -1,9 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { useUser } from "@/context/UserContext"
-import WelcomePage from "./welcome/page"
+import WelcomeScreen from "@/components/WelcomeScreen"
 import HomePageContent from "./home-content"
 
 export default function Page() {
@@ -40,7 +39,7 @@ export default function Page() {
 	// Если нужно показать welcome screen
 	if (showWelcome) {
 		return (
-			<WelcomePage
+			<WelcomeScreen
 				onContinue={() => {
 					sessionStorage.setItem("show_welcome", "false")
 					setShowWelcome(false)
