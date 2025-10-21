@@ -5,10 +5,10 @@ const prisma = new PrismaClient()
 
 // 1. Создаем тип для результата запроса к List с включением (include)
 const listWithRelations = Prisma.validator<Prisma.ListDefaultArgs>()({
-  include: {
-    tasks: true,
-    owner: true,
-  },
+	include: {
+		tasks: true,
+		owner: true,
+	},
 })
 
 type ListWithRelations = Prisma.ListGetPayload<typeof listWithRelations>
@@ -56,14 +56,16 @@ export const createList = async (req: Request, res: Response) => {
 export const getListById = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params
+		const currentUserId = BigInt(req.user!.id)
 
-		const list = await prisma.list.findUnique({
+		let list = await prisma.list.findUnique({
 			where: { id },
 			include: {
 				tasks: {
 					orderBy: { createdAt: "asc" },
 				},
 				owner: true,
+				participants: true,
 			},
 		})
 
@@ -71,10 +73,39 @@ export const getListById = async (req: Request, res: Response) => {
 			return res.status(400).json({ error: "List not found" })
 		}
 
+		const isParticipant = list.participants.some(p => p.id === currentUserId)
+
+		if (!isParticipant) {
+			list = await prisma.list.update({
+				where: { id },
+				data: {
+					participants: {
+						connect: { id: currentUserId },
+					},
+				},
+				include: {
+					// Перезагружаем список
+					tasks: { orderBy: { createdAt: "asc" } },
+					owner: true,
+					participants: true,
+				},
+			})
+		}
+
+		const isOwner = list.ownerId === currentUserId
+
 		res.json({
-			id: list.id,
-			title: list.title,
+			...list,
 			tasks: list.tasks,
+			isOwner: isOwner,
+
+			// Преобразование BigInt в string для фронтенда
+			owner: {
+				id: list.owner.id.toString(),
+				firstName: list.owner.firstName,
+				username: list.owner.username,
+			},
+			ownerId: list.ownerId.toString(),
 		})
 	} catch (error) {
 		console.error("Error fetching list:", error)
@@ -88,14 +119,20 @@ export const getMyLists = async (req: Request, res: Response) => {
 		console.log("User from req:", req.user)
 		const userId = BigInt(req.user!.id)
 
-		const lists = await prisma.list.findMany({
-			where: { ownerId: userId },
+		const lists = (await prisma.list.findMany({
+			where: {
+				OR: [
+					{ ownerId: userId },
+					{ participants: { some: { id: userId } } }
+				]
+			},
 			include: {
 				tasks: true,
 				owner: true,
+				participants: true,
 			},
 			orderBy: { createdAt: "desc" },
-		}) as ListWithRelations[]
+		})) as ListWithRelations[]
 
 		// Преобразуем BigInt в string для JSON
 		const serializableLists = lists.map(list => ({

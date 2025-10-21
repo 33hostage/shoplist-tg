@@ -18,6 +18,7 @@ model User {
   firstName String
   username  String?   @unique
   lists     List[]
+  participatesIn List[] @relation("ParticipantsOnLists")
   createdAt DateTime  @default(now())
 }
 
@@ -26,6 +27,7 @@ model List {
   title     String   @default("Список покупок")
   ownerId   BigInt
   owner     User     @relation(fields: [ownerId], references: [id])
+  participants User[] @relation("ParticipantsOnLists")
   tasks     Task[]
   createdAt DateTime @default(now())
 }
