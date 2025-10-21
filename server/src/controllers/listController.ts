@@ -3,18 +3,30 @@ import { PrismaClient, Prisma } from "@prisma/client"
 
 const prisma = new PrismaClient()
 
-// 1. Создаем тип для результата запроса к List с включением (include)
+// 1. Создаем тип для результата запроса к List с включением (select)
 const listWithRelations = Prisma.validator<Prisma.ListDefaultArgs>()({
-	include: {
-		tasks: true,
-		owner: true,
-		participants: true,
+	select: {
+		id: true,
+		title: true,
+		createdAt: true,
+		ownerId: true,
+		tasks: {
+			select: { id: true, text: true, completed: true, createdAt: true }, // Указываем поля tasks
+		},
+		owner: {
+			select: { id: true, firstName: true, username: true }, // Указываем поля owner
+		},
+		participants: {
+			select: { id: true, firstName: true, username: true }, // Указываем поля participants
+		},
 	},
 })
 
 type ListWithRelations = Prisma.ListGetPayload<typeof listWithRelations>
 type TaskType = Prisma.TaskGetPayload<{}>
-type UserType = Prisma.UserGetPayload<{}>
+type ParticipantType = Prisma.UserGetPayload<{
+    select: { id: true, firstName: true, username: true }
+}>
 
 // POST /api/lists — создать список
 export const createList = async (req: Request, res: Response) => {
@@ -62,13 +74,7 @@ export const getListById = async (req: Request, res: Response) => {
 
 		let list = await prisma.list.findUnique({
 			where: { id },
-			include: {
-				tasks: {
-					orderBy: { createdAt: "asc" },
-				},
-				owner: true,
-				participants: true,
-			},
+			select: listWithRelations.select,
 		})
 
 		if (!list) {
@@ -85,12 +91,7 @@ export const getListById = async (req: Request, res: Response) => {
 						connect: { id: currentUserId },
 					},
 				},
-				include: {
-					// Перезагружаем список
-					tasks: { orderBy: { createdAt: "asc" } },
-					owner: true,
-					participants: true,
-				},
+				select: listWithRelations.select,
 			})
 		}
 
@@ -108,7 +109,7 @@ export const getListById = async (req: Request, res: Response) => {
 				username: list.owner.username,
 			},
 			ownerId: list.ownerId.toString(),
-			participants: list.participants.map((p: UserType) => ({
+			participants: list.participants.map((p: ParticipantType) => ({
 				// p.id - это BigInt, который нужно сериализовать
 				...p,
 				id: p.id.toString(),
@@ -130,10 +131,20 @@ export const getMyLists = async (req: Request, res: Response) => {
 			where: {
 				OR: [{ ownerId: userId }, { participants: { some: { id: userId } } }],
 			},
-			include: {
-				tasks: true,
-				owner: true,
-				participants: true,
+			select: {
+				id: true,
+				title: true,
+				createdAt: true,
+				ownerId: true,
+				tasks: {
+					select: { id: true, text: true, completed: true, createdAt: true }, // Только нужные поля задачи
+				},
+				owner: {
+					select: { id: true, firstName: true, username: true }, // Только нужные поля владельца
+				},
+				participants: {
+					select: { id: true, firstName: true, username: true }, // Только нужные поля участников
+				},
 			},
 			orderBy: { createdAt: "desc" },
 		})) as ListWithRelations[]
@@ -146,7 +157,7 @@ export const getMyLists = async (req: Request, res: Response) => {
 				...list.owner,
 				id: list.owner.id.toString(), // ← важно!
 			},
-			participants: list.participants.map(p => ({
+			participants: list.participants.map((p: ParticipantType) => ({
 				...p,
 				id: p.id.toString(), // <-- Ключевое преобразование BigInt
 			})),

@@ -1,5 +1,7 @@
 import fetch from "node-fetch"
+import { PrismaClient } from "@prisma/client"
 
+const prisma = new PrismaClient()
 const BOT_TOKEN = process.env.BOT_TOKEN
 const WEB_APP_URL = "https://shoplist-tg.vercel.app/"
 
@@ -15,9 +17,33 @@ async function handleTelegramMessage(message: any) {
 			const listId = payload.substring(4)
 			const webAppUrl = `${WEB_APP_URL}?listId=${listId}`
 
+// --- ЗАПРОС К БД ДЛЯ ПОЛУЧЕНИЯ ВЛАДЕЛЬЦА ---
+			const list = await prisma.list.findUnique({
+				where: { id: listId },
+				select: {
+					owner: {
+						select: {
+							firstName: true,
+							username: true,
+						},
+					},
+				},
+			})
+
+			// Определяем имя владельца для сообщения
+			let ownerName = 'неизвестного пользователя'
+			if (list && list.owner) {
+				ownerName = list.owner.username
+					? `@${list.owner.username}`
+					: list.owner.firstName
+			}
+
+			const messageText = `**Совместный список от ${ownerName}**\n\nНажмите, чтобы открыть его в приложении.`
+
 			const buttonPayload = {
 				chat_id: chatId,
-				text: "Нажмите, чтобы открыть совместный список",
+				text: messageText,
+				parse_mode: 'Markdown',
 				reply_markup: {
 					inline_keyboard: [
 						[{ text: "Открыть список", web_app: { url: webAppUrl } }],
