@@ -108,6 +108,11 @@ export const getListById = async (req: Request, res: Response) => {
 				username: list.owner.username,
 			},
 			ownerId: list.ownerId.toString(),
+			participants: list.participants.map((p: UserType) => ({
+				// p.id - это BigInt, который нужно сериализовать
+				...p,
+				id: p.id.toString(),
+			})),
 		})
 	} catch (error) {
 		console.error("Error fetching list:", error)
