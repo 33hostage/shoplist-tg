@@ -8,11 +8,13 @@ const listWithRelations = Prisma.validator<Prisma.ListDefaultArgs>()({
 	include: {
 		tasks: true,
 		owner: true,
+		participants: true,
 	},
 })
 
 type ListWithRelations = Prisma.ListGetPayload<typeof listWithRelations>
 type TaskType = Prisma.TaskGetPayload<{}>
+type UserType = Prisma.UserGetPayload<{}>
 
 // POST /api/lists — создать список
 export const createList = async (req: Request, res: Response) => {
@@ -121,10 +123,7 @@ export const getMyLists = async (req: Request, res: Response) => {
 
 		const lists = (await prisma.list.findMany({
 			where: {
-				OR: [
-					{ ownerId: userId },
-					{ participants: { some: { id: userId } } }
-				]
+				OR: [{ ownerId: userId }, { participants: { some: { id: userId } } }],
 			},
 			include: {
 				tasks: true,
@@ -142,10 +141,11 @@ export const getMyLists = async (req: Request, res: Response) => {
 				...list.owner,
 				id: list.owner.id.toString(), // ← важно!
 			},
-			tasks: list.tasks.map((task: TaskType) => ({
-				...task,
-				// task.id — строка (cuid), так что не нужно преобразовывать
+			participants: list.participants.map(p => ({
+				...p,
+				id: p.id.toString(), // <-- Ключевое преобразование BigInt
 			})),
+			tasks: list.tasks,
 		}))
 
 		res.json(serializableLists)
