@@ -2,6 +2,7 @@
 
 import { useListContext } from "@/context/ListContext"
 import { useParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import SortDropdown from "@/components/list/SortDropdown"
 import ListHeader from "@/components/list/ListHeader"
 import TaskForm from "@/components/list/TaskForm"
@@ -15,6 +16,7 @@ import ListPageSkeleton from "@/components/list/ListPageSkeleton"
 export default function ListPage() {
 	const params = useParams<{ id: string }>()
 	const listId = params?.id
+	const router = useRouter()
 
 	const {
 		list,
@@ -57,7 +59,7 @@ if (loading) {
 	return (
 		<div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 page-fade-in">
 			<div className="max-w-sm mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md p-4">
-				<BackButton ariaLabel="Назад" />
+				<BackButton ariaLabel="Назад" onClick={() => router.push('/')} />
 
 				{/* Редактирования списка + поиск по названию */}
 				<div className="fade-in-up">
