@@ -104,7 +104,7 @@ export default function ListHeader({
 					)}
 
 					{/* Индикатор совместного списка */}
-					{!isOwner && (
+					{list && !isOwner && list.owner.firstName && (
 						<div className="flex items-center mt-2 text-sm text-blue-500 dark:text-blue-300">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -121,7 +121,7 @@ export default function ListHeader({
 								<path d="M23 21v-2a4 4 0 0 0-3-3.87" />
 								<path d="M16 3.13a4 4 0 0 1 0 7.75" />
 							</svg>
-							Совместный список с {list?.owner.firstName}
+							Совместный список с {list.owner.firstName}
 						</div>
 					)}
 
