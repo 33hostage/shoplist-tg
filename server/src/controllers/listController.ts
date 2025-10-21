@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { PrismaClient, Prisma } from "@prisma/client"
+import { sendTelegramNotification } from '../utils/notificationService'
 
 const prisma = new PrismaClient()
 
@@ -93,6 +94,12 @@ export const getListById = async (req: Request, res: Response) => {
 				},
 				select: listWithRelations.select,
 			})
+			// ОТПРАВКА УВЕДОМЛЕНИЯ ВЛАДЕЛЬЦУ
+			const senderName = req.user!.username || req.user!.first_name
+			const notificationText = `✅ Пользователь @${senderName} присоединился к вашему совместному списку: *${list.title}*`
+
+			// Отправляем уведомление владельцу списка (list.ownerId)
+			await sendTelegramNotification(list.ownerId, notificationText)
 		}
 
 		const isOwner = list.ownerId === currentUserId
